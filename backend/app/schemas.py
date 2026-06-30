@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, field_validator, ConfigDict
-from typing import List, Optional
+from typing import List, Optional, Any
 from datetime import datetime
 import re
 
@@ -57,7 +57,7 @@ class ProfileCreateRequest(BaseModel):
         valid_days = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}
         if not v:
             raise ValueError("preferred_days cannot be empty")
-        
+
         # Check uniqueness
         if len(v) != len(set(v)):
             raise ValueError("preferred_days must contain unique values")
@@ -103,3 +103,55 @@ class GuestMeResponse(BaseModel):
     profile: Optional[ProfileResponse] = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+# ---------------------------------------------------------------------------
+# Phase 5: New API response schemas
+# ---------------------------------------------------------------------------
+
+class ReminderUpdateRequest(BaseModel):
+    reminder_enabled: bool
+    reminder_time: Optional[str] = None
+
+    @field_validator("reminder_time")
+    @classmethod
+    def validate_reminder_time(cls, v: Optional[str]) -> Optional[str]:
+        if v is None:
+            return v
+        if not re.match(r"^(?:[01]\d|2[0-3]):[0-5]\d$", v):
+            raise ValueError("reminder_time must be in HH:MM format (24-hour)")
+        return v
+
+
+class NextWorkout(BaseModel):
+    session_id: str
+    day_name: str
+    week_number: int
+    estimated_duration_mins: int
+
+
+class DashboardResponse(BaseModel):
+    """All dashboard metrics derived from persisted data. Never hardcoded."""
+    has_plan: bool
+    execution_mode: str = "mock"          # "mock" | "live"
+    plan_id: Optional[str] = None
+    duration_days: Optional[int] = None
+    start_date: Optional[str] = None
+    days_elapsed: Optional[int] = None
+    plan_days_progress_pct: Optional[float] = None  # % of total plan days elapsed
+    week_total_sessions: Optional[int] = None       # Week 1 total workout days
+    week_completed_sessions: Optional[int] = None   # Week 1 completed
+    week_completion_pct: Optional[float] = None     # Week 1 completion %
+    workout_streak: Optional[int] = None            # Consecutive completed from start
+    weekly_consistency_score: Optional[float] = None
+    next_workout: Optional[NextWorkout] = None
+    reminder_enabled: bool = False
+    reminder_time: Optional[str] = None
+    preferred_days: List[str] = Field(default_factory=list)
+    latest_adjustment: Optional[Any] = None         # ProgressAdjustment dict or None
+
+
+class WorkoutCompleteResponse(BaseModel):
+    status: str       # "completed"
+    completed_at: str
+

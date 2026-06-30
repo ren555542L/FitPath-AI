@@ -16,9 +16,47 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "pydantic-settings>=2.0.0",
     "httpx>=0.27.0",
+    "httpx2>=2.5.0",
 ]
 
 [dependency-groups]
 dev = [
     "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "anyio[trio]>=4.0.0",
 ]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+filterwarnings = [
+    # ── Unfixable third-party deprecations ───────────────────────────────────
+    #
+    # opentelemetry/_importlib_metadata.py uses the deprecated SelectableGroups
+    # dict interface of importlib.metadata (Python 3.11+).
+    # This is triggered transitively by google-adk's telemetry stack on every
+    # import. We cannot fix it without patching opentelemetry or ADK internals.
+    # Tracked upstream: https://github.com/open-telemetry/opentelemetry-python/issues/4043
+    "ignore:SelectableGroups dict interface is deprecated:DeprecationWarning",
+
+    # google-adk emits BaseAgentConfig deprecation during LlmAgent construction.
+    # This is an ADK-internal migration warning; we use the current public API.
+    "ignore:BaseAgentConfig is deprecated:DeprecationWarning",
+
+    # google-adk emits MCPTool class deprecated warning in mcp_toolset.py.
+    # The McpTool rename is an ADK-internal concern.
+    "ignore:MCPTool class is deprecated:DeprecationWarning",
+
+    # google-adk experimental feature flags emit UserWarning for PLUGGABLE_AUTH,
+    # MCP_GRACEFUL_ERROR_HANDLING, BASE_AUTHENTICATED_TOOL, JSON_SCHEMA_FOR_FUNC_DECL.
+    # These are gated ADK features enabled inside the library itself.
+    "ignore:\\[EXPERIMENTAL\\] feature:UserWarning",
+
+    # ── Actionable warnings that are already fixed ────────────────────────────
+    #
+    # starlette.testclient: "Using httpx with starlette.testclient is deprecated;
+    # install httpx2 instead."  FIXED: httpx2>=2.5.0 is now a project dependency.
+    #
+    # Pydantic V2 class-based Config: No class-based Config exists in our code;
+    # all models use model_config = ConfigDict(...).
+]
+

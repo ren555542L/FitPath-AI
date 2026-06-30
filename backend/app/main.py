@@ -1,9 +1,9 @@
+import hashlib
 import logging
+import secrets
 import time
 import uuid
 import json
-import hashlib
-import secrets
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Header, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,14 +12,41 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.database import init_db, get_db, check_db_ready
-from app.repositories import GuestRepository
+from app.repositories import GuestRepository, PlanRepository
 from app.safety_rules import screen_notes
 from app.schemas import (
     GuestStartResponse,
     ProfileCreateRequest,
     ProfileResponse,
-    GuestMeResponse
+    GuestMeResponse,
+    ReminderUpdateRequest,
+    DashboardResponse,
+    WorkoutCompleteResponse,
 )
+
+# Phase 4/5 Imports
+from google.adk.tools.mcp_tool import McpToolset
+from google.adk.tools.skill_toolset import SkillToolset
+from google.adk.skills import load_skill_from_dir
+from google.adk.agents import LlmAgent
+
+from app.agents.schemas import (
+    WorkflowInput,
+    WorkflowResult,
+    CheckInInput,
+    ProgressAdjustment
+)
+from app.agents.mcp_tools import create_mcp_toolset, ALLOWED_MCP_TOOLS
+from app.agents.intake_agent import build_intake_agent
+from app.agents.safety_guidance_agent import build_safety_guidance_agent
+from app.agents.plan_generator_agent import build_plan_generator_agent
+from app.agents.plan_reviewer_agent import build_plan_reviewer_agent, SKILL_DIR
+from app.agents.progress_coach_agent import build_progress_coach_agent
+from app.agents.workflow import run_fitpath_workflow
+from app.agents.mock_workflow import run_mock_workflow
+from google.adk.apps import App
+from google.adk.runners import InMemoryRunner
+
 
 # Configure structured logging format
 logging.basicConfig(level=logging.INFO)
@@ -45,12 +72,58 @@ handler.setFormatter(StructuredJSONFormatter())
 logger.handlers = [handler]
 logger.propagate = False
 
+
+# Singleton containers for Phase 4 workflow resources
+_mcp_toolset: McpToolset | None = None
+_skill_toolset: SkillToolset | None = None
+_intake_agent: LlmAgent | None = None
+_safety_guidance_agent: LlmAgent | None = None
+_plan_generator_agent: LlmAgent | None = None
+_plan_reviewer_agent: LlmAgent | None = None
+_progress_coach_agent: LlmAgent | None = None
+
+
 # Lifespan context manager for startup and shutdown
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Initialize database tables on startup
+    global _mcp_toolset, _skill_toolset
+    global _intake_agent, _safety_guidance_agent, _plan_generator_agent, _plan_reviewer_agent, _progress_coach_agent
+
+    # 1. Initialize database tables
     await init_db()
-    yield
+
+    # 2. Skip MCP and LLM init in mock mode
+    if settings.MOCK_AGENT_MODE:
+        logger.info("MOCK_AGENT_MODE is enabled. Skipping ADK, MCP, and Gemini initialization.")
+    else:
+        # Build Singleton MCP Toolset (starts the stdio subprocess)
+        logger.info("Initializing MCP Toolset subprocess...")
+        _mcp_toolset = create_mcp_toolset()
+
+        # Build Singleton Skill Toolset (loads SKILL.md)
+        logger.info(f"Loading reviewer skill from: {SKILL_DIR}")
+        skill = load_skill_from_dir(SKILL_DIR)
+        _skill_toolset = SkillToolset(skills=[skill])
+
+        # Build Singleton LlmAgents using configured model name
+        logger.info(f"Building LLM Agents using model: {settings.MODEL_NAME}")
+        _intake_agent = build_intake_agent()
+        _safety_guidance_agent = build_safety_guidance_agent()
+        _plan_generator_agent = build_plan_generator_agent(_mcp_toolset)
+        _plan_reviewer_agent = build_plan_reviewer_agent(_skill_toolset)
+        _progress_coach_agent = build_progress_coach_agent()
+
+    yield  # Application is running and serving requests
+
+    # 5. Clean up persistent toolset sessions on shutdown
+    if not settings.MOCK_AGENT_MODE:
+        logger.info("Shutting down toolsets...")
+        if _mcp_toolset:
+            await _mcp_toolset.close()
+        if _skill_toolset:
+            await _skill_toolset.close()
+    logger.info("Lifespan cleanup complete.")
+
 
 app = FastAPI(
     title="FitPath API",
@@ -59,10 +132,10 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Enable CORS for local React development
+# Enable CORS for local React development (Explicit Origins)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Restrict this in production settings
+    allow_origins=[settings.FRONTEND_ORIGIN],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -104,7 +177,6 @@ async def add_structured_logs_middleware(request: Request, call_next):
         )
     finally:
         duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
-        # Log request processing with strict exclusion of sensitive values
         logger.info(
             f"Request processed: {request.method} {route_path}",
             extra={
@@ -122,6 +194,7 @@ async def add_structured_logs_middleware(request: Request, call_next):
 
 # Repositories initialization
 guest_repo = GuestRepository()
+plan_repo = PlanRepository()
 
 # Security dependency to fetch the authenticated guest session
 async def get_current_guest(
@@ -135,7 +208,6 @@ async def get_current_guest(
             detail="Missing guest token"
         )
         
-    # Standardize token hashing for O(1) secure lookups
     computed_hash = hashlib.sha256(x_guest_token.encode("utf-8")).hexdigest()
     
     session = await guest_repo.get_session_by_hash(db, computed_hash)
@@ -146,7 +218,6 @@ async def get_current_guest(
             detail="Invalid guest token"
         )
         
-    # Constant-time comparison for timing attack prevention
     if not secrets.compare_digest(session.guest_token_hash, computed_hash):
         logger.warning("Authentication failed: Secrets verification mismatch")
         raise HTTPException(
@@ -156,27 +227,94 @@ async def get_current_guest(
         
     return session
 
+# Dependencies to access startup singletons safely
+def get_mcp_toolset() -> McpToolset:
+    if _mcp_toolset is None:
+        raise HTTPException(status_code=503, detail="MCP Toolset is not initialized.")
+    return _mcp_toolset
+
+def get_skill_toolset() -> SkillToolset:
+    if _skill_toolset is None:
+        raise HTTPException(status_code=503, detail="Skill Toolset is not initialized.")
+    return _skill_toolset
+
+def get_intake_agent() -> LlmAgent:
+    if _intake_agent is None:
+         raise HTTPException(status_code=503, detail="Intake Agent is not initialized.")
+    return _intake_agent
+
+def get_safety_guidance_agent() -> LlmAgent:
+    if _safety_guidance_agent is None:
+         raise HTTPException(status_code=503, detail="Safety Guidance Agent is not initialized.")
+    return _safety_guidance_agent
+
+def get_plan_generator_agent() -> LlmAgent:
+    if _plan_generator_agent is None:
+         raise HTTPException(status_code=503, detail="Plan Generator Agent is not initialized.")
+    return _plan_generator_agent
+
+def get_plan_reviewer_agent() -> LlmAgent:
+    if _plan_reviewer_agent is None:
+         raise HTTPException(status_code=503, detail="Plan Reviewer Agent is not initialized.")
+    return _plan_reviewer_agent
+
+def get_progress_coach_agent() -> LlmAgent:
+    if _progress_coach_agent is None:
+         raise HTTPException(status_code=503, detail="Progress Coach Agent is not initialized.")
+    return _progress_coach_agent
+
+
 @app.get("/health")
 async def health_check():
-    """Returns process status."""
+    """
+    Process liveness only.
+    Returns 200 if the process is alive — does not call MCP or check dependencies.
+    """
     return {
         "status": "healthy",
         "process": "alive",
-        "mcp_connected": False
     }
+
 
 @app.get("/ready")
 async def readiness_check():
-    """Returns readiness status after validating database connection and table access."""
+    """
+    Returns readiness status after validating database connection.
+    If live mode, also validates MCP toolset discovery.
+    """
+    # 1. Validate Database readiness
     is_db_ready = await check_db_ready()
     if not is_db_ready:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Database connection or table access failed"
         )
-    return {
-        "status": "ready"
-    }
+
+    # 2. Validate MCP Toolset readiness (if live mode)
+    if not settings.MOCK_AGENT_MODE:
+        if _mcp_toolset is None:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="MCP Toolset is not initialized"
+            )
+        try:
+            discovered_tools = await _mcp_toolset.get_tools()
+            discovered_names = {t.name for t in discovered_tools}
+            expected_names = set(ALLOWED_MCP_TOOLS)
+            if not expected_names.issubset(discovered_names):
+                raise HTTPException(
+                    status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                    detail=f"MCP tools discovery incomplete. Found: {discovered_names}, Expected: {expected_names}"
+                )
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=f"MCP tools discovery check failed: {str(e)}"
+            )
+        return {"status": "ready", "execution_mode": "live"}
+
+    return {"status": "ready", "execution_mode": "mock"}
+
 
 @app.post("/api/guest/start", response_model=GuestStartResponse)
 async def start_guest_session(db: AsyncSession = Depends(get_db)):
@@ -192,6 +330,7 @@ async def start_guest_session(db: AsyncSession = Depends(get_db)):
         "created_at": session.created_at
     }
 
+
 @app.post("/api/profile", response_model=ProfileResponse)
 async def create_or_update_guest_profile(
     profile_data: ProfileCreateRequest,
@@ -199,7 +338,6 @@ async def create_or_update_guest_profile(
     db: AsyncSession = Depends(get_db)
 ):
     """Saves guest onboarding profile while screening notes in-memory."""
-    # Safety screening on notes in-memory (raw notes are never saved or logged)
     safety = screen_notes(profile_data.notes)
     
     db_profile_data = {
@@ -223,6 +361,7 @@ async def create_or_update_guest_profile(
     )
     return profile
 
+
 @app.get("/api/guest/me", response_model=GuestMeResponse)
 async def get_current_guest_info(
     current_session = Depends(get_current_guest),
@@ -235,6 +374,7 @@ async def get_current_guest_info(
         "created_at": current_session.created_at,
         "profile": profile
     }
+
 
 @app.delete("/api/guest")
 async def delete_guest_session(
@@ -252,3 +392,223 @@ async def delete_guest_session(
         "status": "success",
         "message": "Guest session and profile successfully deleted"
     }
+
+
+# ---------------------------------------------------------------------------
+# Phase 4/5 Multi-Agent Routes
+# ---------------------------------------------------------------------------
+
+@app.post("/api/plan/generate", response_model=WorkflowResult)
+async def generate_plan(
+    request: Request,
+    current_session = Depends(get_current_guest),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Triggers FitPath's workflow to generate and review a fitness plan.
+    Branch: Mock (local deterministic) vs Live (ADK + MCP).
+    Persists plan if successful.
+    """
+    profile = await guest_repo.get_profile(db, current_session.guest_id)
+    if not profile:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Profile not found. Please complete onboarding first."
+        )
+
+    workflow_input = WorkflowInput(
+        goal=profile.goal,
+        fitness_level=profile.fitness_level,
+        duration_days=profile.duration_days,
+        available_time_mins=profile.available_time_mins,
+        days_per_week=profile.days_per_week,
+        equipment=profile.equipment,
+        preferred_days=profile.preferred_days,
+        safety_status=profile.safety_status,
+        safety_message=profile.safety_message
+    )
+
+    try:
+        if settings.MOCK_AGENT_MODE:
+            result = await run_mock_workflow(workflow_input=workflow_input)
+        else:
+            result = await run_fitpath_workflow(
+                workflow_input=workflow_input,
+                mcp_toolset=get_mcp_toolset(),
+                intake_agent=get_intake_agent(),
+                safety_guidance_agent=get_safety_guidance_agent(),
+                plan_generator_agent=get_plan_generator_agent(),
+                plan_reviewer_agent=get_plan_reviewer_agent()
+            )
+
+        # Persist plan if successfully generated
+        if result.workflow_status == "completed" and result.fitness_plan:
+            await plan_repo.save_plan(
+                db=db,
+                guest_id=current_session.guest_id,
+                execution_mode=result.execution_mode,
+                duration_days=profile.duration_days,
+                roadmap_json=result.fitness_plan.roadmap.model_dump(),
+                week_1_json=result.fitness_plan.week_1.model_dump(),
+            )
+
+        return result
+
+    except Exception as e:
+        logger.error(f"Workflow execution failed: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to execute plan generation workflow: {str(e)}"
+        )
+
+
+@app.get("/api/plan")
+async def get_active_plan(
+    current_session = Depends(get_current_guest),
+    db: AsyncSession = Depends(get_db)
+):
+    """Returns the authenticated guest's active persisted plan."""
+    plan = await plan_repo.get_active_plan(db, current_session.guest_id)
+    if not plan:
+        raise HTTPException(status_code=404, detail="No active plan found.")
+    
+    return {
+        "plan_id": plan.plan_id,
+        "execution_mode": plan.execution_mode,
+        "duration_days": plan.duration_days,
+        "start_date": plan.start_date.isoformat(),
+        "roadmap": plan.roadmap_json,
+        "week_1": plan.week_1_json
+    }
+
+
+@app.delete("/api/plan")
+async def delete_active_plan(
+    current_session = Depends(get_current_guest),
+    db: AsyncSession = Depends(get_db)
+):
+    """Deletes only the authenticated user’s active plan and workout sessions."""
+    success = await plan_repo.delete_active_plan(db, current_session.guest_id)
+    if not success:
+        raise HTTPException(status_code=404, detail="No active plan found.")
+    return {"status": "success"}
+
+
+@app.get("/api/dashboard", response_model=DashboardResponse)
+async def get_dashboard(
+    current_session = Depends(get_current_guest),
+    db: AsyncSession = Depends(get_db)
+):
+    """Returns real dashboard metrics derived from persisted data."""
+    data = await plan_repo.get_dashboard_data(db, current_session.guest_id)
+    return DashboardResponse(**data)
+
+
+@app.post("/api/workouts/{session_id}/complete", response_model=WorkoutCompleteResponse)
+async def complete_workout(
+    session_id: str,
+    current_session = Depends(get_current_guest),
+    db: AsyncSession = Depends(get_db)
+):
+    """Marks a workout session as complete."""
+    ws = await plan_repo.complete_workout_session(db, session_id, current_session.guest_id)
+    if not ws:
+        raise HTTPException(status_code=403, detail="Session not found or forbidden.")
+    
+    return {
+        "status": "completed",
+        "completed_at": ws.completed_at.isoformat()
+    }
+
+
+@app.patch("/api/reminders")
+async def update_reminders(
+    body: ReminderUpdateRequest,
+    current_session = Depends(get_current_guest),
+    db: AsyncSession = Depends(get_db)
+):
+    """Updates the guest's reminder preferences."""
+    profile = await guest_repo.update_reminder(
+        db, current_session.guest_id, body.reminder_enabled, body.reminder_time
+    )
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profile not found.")
+    
+    return {
+        "reminder_enabled": profile.reminder_enabled,
+        "reminder_time": profile.reminder_time
+    }
+
+
+@app.post("/api/checkins", response_model=ProgressAdjustment)
+async def submit_checkin(
+    body: CheckInInput,
+    current_session = Depends(get_current_guest),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Evaluates check-in inputs, saves them, and returns progress coach adjustments.
+    Mock Mode: returns a deterministic mock adjustment.
+    Live Mode: calls the ADK coach agent.
+    """
+    plan = await plan_repo.get_active_plan(db, current_session.guest_id)
+    if not plan:
+        raise HTTPException(status_code=404, detail="No active plan found.")
+    
+    final_result = None
+
+    if settings.MOCK_AGENT_MODE:
+        # Return a deterministic mock adjustment
+        final_result = ProgressAdjustment(
+            recommendation="Keep up the great work! Your consistency is excellent.",
+            reasoning="You have completed all planned sessions with great energy.",
+            next_week_modifications=["Increase intensity slightly"]
+        ).model_dump()
+    else:
+        # Live Mode - invoke the coach agent
+        coach_agent = get_progress_coach_agent()
+        from google.genai import types as genai_types
+        app_runner = App(name="fitpath_coach", root_agent=coach_agent)
+        runner = InMemoryRunner(app=app_runner)
+
+        session = await runner.session_service.create_session(
+            app_name="fitpath_coach",
+            user_id=current_session.guest_id,
+            session_id=f"checkin-{current_session.guest_id}-{uuid.uuid4().hex[:8]}",
+        )
+
+        try:
+            async for event in runner.run_async(
+                user_id=current_session.guest_id,
+                session_id=session.id,
+                new_message=genai_types.Content(
+                    role="user",
+                    parts=[genai_types.Part.from_text(text="Submit weekly check-in")],
+                ),
+                state_delta=body.model_dump(),
+            ):
+                if event.actions and event.actions.state_delta:
+                    progress = event.actions.state_delta.get("progress_adjustment")
+                    if progress:
+                        final_result = progress
+        finally:
+            await runner.close()
+
+    if final_result is None:
+        raise HTTPException(status_code=500, detail="Progress Coach agent produced no output.")
+
+    # Save to database
+    await plan_repo.save_checkin(
+        db=db,
+        guest_id=current_session.guest_id,
+        plan_id=plan.plan_id,
+        week_number=1, # Fixed to 1 for MVP
+        completed_sessions=body.completed_sessions,
+        energy_level=body.energy_level,
+        difficulty_rating=body.difficulty_rating,
+        adjustment_json=final_result,
+    )
+
+    if isinstance(final_result, dict):
+        return ProgressAdjustment(**final_result)
+    return final_result

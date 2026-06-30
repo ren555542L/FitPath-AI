@@ -1,0 +1,38 @@
+"""agents/__init__.py — public re-exports for the agents package."""
+from .schemas import (
+    WorkflowInput,
+    AgentFitnessContext,
+    SafetyGuidanceResponse,
+    DraftWorkoutExercise,
+    DraftWorkoutDay,
+    DraftWeeklyPlan,
+    FitnessRoadmap,
+    DraftGeneratedFitnessPlan,
+    EnrichedWorkoutExercise,
+    EnrichedWorkoutDay,
+    EnrichedWeeklyPlan,
+    GeneratedFitnessPlan,
+    PlanReviewResult,
+    CheckInInput,
+    ProgressAdjustment,
+    WorkflowResult,
+)
+
+__all__ = [
+    "WorkflowInput",
+    "AgentFitnessContext",
+    "SafetyGuidanceResponse",
+    "DraftWorkoutExercise",
+    "DraftWorkoutDay",
+    "DraftWeeklyPlan",
+    "FitnessRoadmap",
+    "DraftGeneratedFitnessPlan",
+    "EnrichedWorkoutExercise",
+    "EnrichedWorkoutDay",
+    "EnrichedWeeklyPlan",
+    "GeneratedFitnessPlan",
+    "PlanReviewResult",
+    "CheckInInput",
+    "ProgressAdjustment",
+    "WorkflowResult",
+]

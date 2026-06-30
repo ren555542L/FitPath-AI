@@ -33,9 +33,10 @@ async def init_db():
     """Initializes the database structure (creates tables for SQLite)."""
     if settings.DATABASE_PROVIDER == "sqlite" and engine is not None:
         async with engine.begin() as conn:
-            # Import models to ensure they are registered with Base
-            from app.models import GuestSession, GuestProfile
+            # Import all models to ensure they are registered with Base
+            from app.models import GuestSession, GuestProfile, FitnessPlan, WorkoutSession, WeeklyCheckin  # noqa: F401
             await conn.run_sync(Base.metadata.create_all)
+
 
 async def get_db():
     """Dependency injector for database session."""
