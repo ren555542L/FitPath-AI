@@ -1,0 +1,9 @@
+[project]
+name = "fitpath-ai"
+version = "0.1.0"
+description = "FitPath - A Safety-First AI Fitness Concierge"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.uv.workspace]
+members = ["backend", "fitness_mcp"]

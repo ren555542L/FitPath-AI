@@ -1,0 +1,431 @@
+[
+  {
+    "name": "Neck Half Circles",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": [],
+    "category": "mobility",
+    "focus_tags": ["neck", "posture", "tension relief", "upper body"],
+    "estimated_duration_minutes": 3,
+    "instructions": [
+      "Sit or stand tall with shoulders relaxed.",
+      "Gently drop your right ear toward your right shoulder.",
+      "Slowly roll your chin down toward your chest.",
+      "Continue to the left shoulder and back to center.",
+      "Do not roll your head backward. Repeat 5 times each direction."
+    ],
+    "safety_notes": "Move slowly and without force. Stop immediately if you feel sharp pain, tingling, or dizziness. Do not perform full circles that include backward neck extension."
+  },
+  {
+    "name": "Cat-Cow Stretch",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": ["yoga_mat"],
+    "category": "mobility",
+    "focus_tags": ["spine", "lower back", "core", "flexibility"],
+    "estimated_duration_minutes": 5,
+    "instructions": [
+      "Start on all fours with wrists below shoulders and knees below hips.",
+      "Inhale and let your belly drop toward the floor, lift your chest and tailbone (Cow).",
+      "Exhale and round your spine toward the ceiling, tuck your chin and pelvis (Cat).",
+      "Move slowly between the two positions for 8-10 repetitions."
+    ],
+    "safety_notes": "Keep your wrists stacked directly under your shoulders to avoid strain. Avoid jerky movements. If you have knee discomfort, place a folded blanket under your knees."
+  },
+  {
+    "name": "Seated Hip Circles",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": [],
+    "category": "mobility",
+    "focus_tags": ["hips", "lower back", "flexibility", "sedentary relief"],
+    "estimated_duration_minutes": 4,
+    "instructions": [
+      "Sit upright on a sturdy chair with feet flat on the floor.",
+      "Place both hands on your thighs for support.",
+      "Gently rotate your hips in a wide circle clockwise for 5 rotations.",
+      "Reverse direction for 5 more rotations.",
+      "Breathe steadily throughout."
+    ],
+    "safety_notes": "Keep movements smooth and controlled. Do not push through pain in the hips or lower back. This exercise is well-suited for people who sit for long periods."
+  },
+  {
+    "name": "Standing Quad Stretch",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": [],
+    "category": "mobility",
+    "focus_tags": ["quadriceps", "knee", "hip flexor", "leg flexibility"],
+    "estimated_duration_minutes": 4,
+    "instructions": [
+      "Stand near a wall and place one hand lightly on it for balance.",
+      "Bend your right knee and bring your heel toward your glutes.",
+      "Hold your right ankle with your right hand.",
+      "Keep knees together and stand tall.",
+      "Hold for 20-30 seconds, then switch sides. Repeat twice each side."
+    ],
+    "safety_notes": "Do not pull aggressively on the ankle. If you cannot balance, hold a chair or wall. Avoid this stretch if you have acute knee injuries."
+  },
+  {
+    "name": "Thoracic Rotation Stretch",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": ["yoga_mat"],
+    "category": "mobility",
+    "focus_tags": ["spine", "upper back", "posture", "rotation"],
+    "estimated_duration_minutes": 5,
+    "instructions": [
+      "Sit on the floor with legs crossed or in a chair.",
+      "Place your right hand behind your head and left hand on your right knee.",
+      "Inhale and on the exhale, rotate your upper body gently to the right.",
+      "Hold for 2 breaths then return to center.",
+      "Repeat 5 times each side."
+    ],
+    "safety_notes": "Only rotate as far as comfortable. The movement should come from the mid-back, not the lower back. Stop if you feel pinching in the spine."
+  },
+  {
+    "name": "Bodyweight Squat",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": [],
+    "category": "functional strength",
+    "focus_tags": ["legs", "glutes", "core", "knee health", "daily movement"],
+    "estimated_duration_minutes": 8,
+    "instructions": [
+      "Stand with feet shoulder-width apart, toes slightly turned out.",
+      "Extend arms forward for balance.",
+      "Inhale and push your hips back and down as if sitting into a chair.",
+      "Lower until thighs are parallel to the floor or as far as comfortable.",
+      "Exhale and press through your heels to stand back up.",
+      "Perform 3 sets of 10 repetitions with 60 seconds rest between sets."
+    ],
+    "safety_notes": "Keep your chest up and knees tracking over your toes. Do not let your knees cave inward. If you feel knee pain, reduce depth or see a physiotherapist."
+  },
+  {
+    "name": "Wall Push-Up",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": [],
+    "category": "functional strength",
+    "focus_tags": ["chest", "shoulders", "triceps", "upper body", "beginner"],
+    "estimated_duration_minutes": 6,
+    "instructions": [
+      "Stand arm's length from a wall with palms flat on the wall at shoulder height.",
+      "Step your feet back slightly so you are at a slight angle.",
+      "Inhale and bend your elbows to bring your chest toward the wall.",
+      "Exhale and push back to starting position.",
+      "Perform 3 sets of 10-12 repetitions."
+    ],
+    "safety_notes": "Keep your body in a straight line from head to heels. Do not let your lower back sag. This is a safe starting point if standard push-ups are too difficult."
+  },
+  {
+    "name": "Glute Bridge",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": ["yoga_mat"],
+    "category": "functional strength",
+    "focus_tags": ["glutes", "lower back", "core", "hips", "posture"],
+    "estimated_duration_minutes": 8,
+    "instructions": [
+      "Lie on your back with knees bent and feet flat on the floor, hip-width apart.",
+      "Place arms by your sides with palms facing down.",
+      "Inhale to prepare, then exhale and squeeze your glutes to lift your hips off the floor.",
+      "Form a straight line from your knees to your shoulders.",
+      "Hold for 2 seconds at the top, then lower slowly.",
+      "Perform 3 sets of 12 repetitions."
+    ],
+    "safety_notes": "Do not hyperextend your lower back at the top of the movement. Keep your core lightly engaged throughout. Avoid if you have acute lower back pain."
+  },
+  {
+    "name": "Dumbbell Bent-Over Row",
+    "difficulty": "beginner",
+    "required_equipment": ["dumbbells"],
+    "optional_equipment": [],
+    "category": "functional strength",
+    "focus_tags": ["back", "posture", "upper body", "pulling"],
+    "estimated_duration_minutes": 10,
+    "instructions": [
+      "Hold a dumbbell in each hand. Stand with feet hip-width apart.",
+      "Hinge at your hips to lean your torso forward about 45 degrees, keeping your back straight.",
+      "Let the dumbbells hang in front of you with arms extended.",
+      "Pull the dumbbells toward your lower ribcage, squeezing your shoulder blades together.",
+      "Lower slowly and repeat for 3 sets of 10 repetitions with light to moderate weight."
+    ],
+    "safety_notes": "Keep your back flat throughout; do not round your spine. Use light weights to start. If you have lower back issues, perform seated rows instead."
+  },
+  {
+    "name": "Resistance Band Pull-Apart",
+    "difficulty": "beginner",
+    "required_equipment": ["resistance_bands"],
+    "optional_equipment": [],
+    "category": "functional strength",
+    "focus_tags": ["shoulders", "upper back", "posture", "shoulder health"],
+    "estimated_duration_minutes": 6,
+    "instructions": [
+      "Hold a resistance band in both hands at shoulder width with palms facing down.",
+      "Extend your arms straight out in front of you at shoulder height.",
+      "Pull the band apart by moving your arms out to the sides until the band touches your chest.",
+      "Slowly return to starting position.",
+      "Perform 3 sets of 12-15 repetitions."
+    ],
+    "safety_notes": "Use a light band to start. Keep your shoulders down and away from your ears. Stop if you feel shoulder joint pain."
+  },
+  {
+    "name": "Marching in Place",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": [],
+    "category": "low-impact cardio",
+    "focus_tags": ["cardio", "endurance", "full body warm-up", "low impact"],
+    "estimated_duration_minutes": 10,
+    "instructions": [
+      "Stand tall with feet hip-width apart.",
+      "Lift your right knee to hip height while swinging your left arm forward.",
+      "Lower and repeat on the opposite side.",
+      "Keep a steady rhythm for 10 minutes.",
+      "You can increase intensity by lifting knees higher or increasing pace."
+    ],
+    "safety_notes": "Keep your core lightly engaged and back upright. Wear supportive footwear. Reduce pace if you feel out of breath to the point of difficulty speaking."
+  },
+  {
+    "name": "Step Touch Side to Side",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": [],
+    "category": "low-impact cardio",
+    "focus_tags": ["cardio", "coordination", "balance", "low impact"],
+    "estimated_duration_minutes": 10,
+    "instructions": [
+      "Stand with feet together.",
+      "Step your right foot out to the right side, then bring your left foot to meet it.",
+      "Step your left foot out to the left side, then bring your right foot to meet it.",
+      "Add an optional arm swing for increased cardio.",
+      "Continue for 10 minutes at a comfortable pace."
+    ],
+    "safety_notes": "Ensure you have enough clear space around you. Use a chair nearby for balance if needed. Keep your knees slightly soft, not locked."
+  },
+  {
+    "name": "Standing Bicycle",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": [],
+    "category": "low-impact cardio",
+    "focus_tags": ["core", "cardio", "coordination", "balance"],
+    "estimated_duration_minutes": 8,
+    "instructions": [
+      "Stand with feet shoulder-width apart and hands behind your head.",
+      "Lift your right knee and rotate your left elbow toward it.",
+      "Return to standing and repeat on the other side.",
+      "Alternate for 3 sets of 16 repetitions (8 per side).",
+      "Keep the movement controlled, not rushed."
+    ],
+    "safety_notes": "Do not pull on your neck with your hands. Keep the movement slow and controlled. If balance is an issue, reduce the height of the knee raise."
+  },
+  {
+    "name": "Walking Heel-to-Toe",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": [],
+    "category": "low-impact cardio",
+    "focus_tags": ["balance", "coordination", "ankle stability", "low impact"],
+    "estimated_duration_minutes": 10,
+    "instructions": [
+      "Stand next to a wall in a clear hallway or open space.",
+      "Place your right heel directly in front of your left toes.",
+      "Continue forward in a straight line, placing each heel directly in front of the opposite toes.",
+      "Walk for 15-20 steps, then turn and repeat.",
+      "Do this for 10 minutes at a gentle pace."
+    ],
+    "safety_notes": "Walk along a clear, flat surface. Keep a wall or chair nearby for support. This is especially beneficial for ankle stability and fall prevention."
+  },
+  {
+    "name": "Seated Leg Raise",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": [],
+    "category": "low-impact cardio",
+    "focus_tags": ["legs", "core", "circulation", "office-friendly"],
+    "estimated_duration_minutes": 8,
+    "instructions": [
+      "Sit upright in a sturdy chair with feet flat on the floor.",
+      "Straighten your right leg and hold it parallel to the floor for 3 seconds.",
+      "Lower slowly and repeat on the left.",
+      "Perform 3 sets of 10 repetitions on each leg.",
+      "For added intensity, flex your foot toward you as you raise the leg."
+    ],
+    "safety_notes": "Keep your core lightly engaged. Do not swing the leg or lean backward excessively. Suitable for those with limited mobility or who work at a desk."
+  },
+  {
+    "name": "Single-Leg Stand",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": [],
+    "category": "balance and posture",
+    "focus_tags": ["balance", "ankle stability", "proprioception", "fall prevention"],
+    "estimated_duration_minutes": 5,
+    "instructions": [
+      "Stand near a wall or chair for safety.",
+      "Lift your right foot slightly off the ground.",
+      "Hold the position for 10-20 seconds while maintaining an upright posture.",
+      "Lower and repeat on the left foot.",
+      "Perform 3 times each side, progressively increasing hold duration."
+    ],
+    "safety_notes": "Always have a wall or chair within arm's reach. Start with short holds of 5-10 seconds if needed. This exercise is essential for preventing falls in older adults."
+  },
+  {
+    "name": "Heel-to-Toe Rock",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": [],
+    "category": "balance and posture",
+    "focus_tags": ["balance", "ankle", "lower leg", "coordination"],
+    "estimated_duration_minutes": 4,
+    "instructions": [
+      "Stand with feet hip-width apart near a wall.",
+      "Slowly rise up onto your tiptoes, holding for 2 seconds.",
+      "Rock back onto your heels, lifting the front of your feet, holding for 2 seconds.",
+      "Return to flat footing and repeat.",
+      "Complete 2 sets of 10 repetitions."
+    ],
+    "safety_notes": "Perform near a wall or chair to catch yourself if needed. Move slowly and deliberately. Avoid if you have acute ankle sprains."
+  },
+  {
+    "name": "Tall Sitting Posture Reset",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": [],
+    "category": "balance and posture",
+    "focus_tags": ["posture", "spine", "desk workers", "neck", "shoulder"],
+    "estimated_duration_minutes": 3,
+    "instructions": [
+      "Sit on a chair with feet flat on the floor.",
+      "Roll your shoulders back and down, away from your ears.",
+      "Gently lengthen the back of your neck by tucking your chin slightly.",
+      "Place your hands in your lap with palms facing up.",
+      "Breathe deeply for 5 breaths while maintaining this position.",
+      "Repeat this reset every 30-60 minutes if seated for long periods."
+    ],
+    "safety_notes": "This is a gentle awareness exercise with no injury risk. If you experience neck tension, stop and consult a physiotherapist."
+  },
+  {
+    "name": "Shoulder Blade Squeeze",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": [],
+    "category": "balance and posture",
+    "focus_tags": ["posture", "upper back", "shoulder", "desk workers"],
+    "estimated_duration_minutes": 4,
+    "instructions": [
+      "Sit or stand tall.",
+      "Let your arms hang at your sides.",
+      "Squeeze your shoulder blades together as if you're trying to hold a pencil between them.",
+      "Hold for 5 seconds, then release.",
+      "Repeat 10-15 times."
+    ],
+    "safety_notes": "Do not shrug your shoulders upward during the squeeze. This movement is safe for most people and helps counteract forward head posture from prolonged desk work."
+  },
+  {
+    "name": "Standing Wall Angel",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": [],
+    "category": "balance and posture",
+    "focus_tags": ["posture", "shoulders", "upper back", "chest opener"],
+    "estimated_duration_minutes": 5,
+    "instructions": [
+      "Stand with your back flat against a wall, feet a few inches from the base.",
+      "Press your lower back, upper back, and head gently against the wall.",
+      "Raise your arms to a 'W' shape with elbows at shoulder height and hands near your ears.",
+      "Slowly slide arms up the wall into a 'Y' shape, then return to 'W'.",
+      "Keep your back and arms in contact with the wall throughout.",
+      "Perform 2 sets of 10 repetitions."
+    ],
+    "safety_notes": "Do not force your arms flat if your posture restricts the range. The goal is gradual improvement over time. Stop if you feel shoulder joint discomfort."
+  },
+  {
+    "name": "Diaphragmatic Breathing",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": ["yoga_mat"],
+    "category": "recovery",
+    "focus_tags": ["breathing", "stress relief", "nervous system", "relaxation"],
+    "estimated_duration_minutes": 5,
+    "instructions": [
+      "Lie on your back with knees bent and feet flat, or sit comfortably upright.",
+      "Place one hand on your chest and one on your belly.",
+      "Inhale slowly through your nose for 4 counts, letting your belly rise.",
+      "Exhale slowly through your mouth for 6 counts, letting your belly fall.",
+      "The hand on your chest should remain relatively still.",
+      "Continue for 5 minutes."
+    ],
+    "safety_notes": "This is a safe, calming breathing practice for almost all individuals. If you feel lightheaded, return to normal breathing. Do not hold your breath excessively."
+  },
+  {
+    "name": "Child's Pose",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": ["yoga_mat"],
+    "category": "recovery",
+    "focus_tags": ["lower back", "hips", "relaxation", "recovery", "flexibility"],
+    "estimated_duration_minutes": 5,
+    "instructions": [
+      "Kneel on the floor with your big toes touching and knees apart.",
+      "Sit back toward your heels.",
+      "Extend your arms forward on the floor and rest your forehead gently down.",
+      "Breathe slowly and hold for 30-60 seconds.",
+      "Repeat 2-3 times."
+    ],
+    "safety_notes": "If you have knee discomfort, place a rolled towel behind your knees. Avoid if you are in late pregnancy. Do not force the stretch."
+  },
+  {
+    "name": "Supine Twist",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": ["yoga_mat"],
+    "category": "recovery",
+    "focus_tags": ["spine", "lower back", "hips", "relaxation", "flexibility"],
+    "estimated_duration_minutes": 5,
+    "instructions": [
+      "Lie on your back with legs extended.",
+      "Draw your right knee toward your chest.",
+      "Guide the right knee across your body to the left side using your left hand.",
+      "Extend your right arm out to the side and look to the right.",
+      "Hold for 30 seconds, breathing calmly. Repeat on the other side."
+    ],
+    "safety_notes": "Keep both shoulders relaxed and on the floor as much as possible. Do not force the knee to the ground. Avoid if you have acute disc herniation or severe lower back pain."
+  },
+  {
+    "name": "Foam Roller Upper Back Release",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": ["yoga_mat"],
+    "category": "recovery",
+    "focus_tags": ["upper back", "tension relief", "posture", "recovery"],
+    "estimated_duration_minutes": 6,
+    "instructions": [
+      "Lie on your back with knees bent and feet flat.",
+      "Support your head with both hands clasped behind it.",
+      "Gently arch your upper back over a rolled-up towel or your hands clasped under the upper back.",
+      "Hold for 2-3 breaths then slowly return to flat.",
+      "Move slightly up or down the upper back and repeat."
+    ],
+    "safety_notes": "Only perform this on your upper back (thoracic spine), not your lower back or neck. The pressure should feel like a gentle release, not sharp pain. Do not perform if you have osteoporosis without medical clearance."
+  },
+  {
+    "name": "Progressive Muscle Relaxation",
+    "difficulty": "beginner",
+    "required_equipment": [],
+    "optional_equipment": ["yoga_mat"],
+    "category": "recovery",
+    "focus_tags": ["stress relief", "sleep", "relaxation", "nervous system"],
+    "estimated_duration_minutes": 10,
+    "instructions": [
+      "Lie comfortably on your back with arms by your sides.",
+      "Starting with your feet, tense the muscles tightly for 5 seconds.",
+      "Release completely and notice the relaxation for 10 seconds.",
+      "Move progressively upward: calves, thighs, abdomen, hands, arms, shoulders, face.",
+      "Breathe slowly throughout."
+    ],
+    "safety_notes": "Do not tense to the point of cramping. If any area feels painful, skip it and move to the next. This practice is excellent for improving sleep quality and reducing anxiety."
+  }
+]
